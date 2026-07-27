@@ -1,0 +1,24 @@
+Beginner
+Show all customers.
+List the names and email addresses of all customers.
+Show all orders.
+Find the customer with email john@example.com.
+Display all orders with an amount greater than 1000.
+Intermediate
+Show the names of customers who have placed at least one order.
+List each customer's name along with the amount of their orders.
+Find the total amount spent by each customer.
+Show customers who have never placed an order.
+Display the top 5 customers based on total purchase amount.
+Find customers who have placed more than one order.
+Show the average order amount for each customer.
+Advanced (Good for testing a SQL Agent)
+Show the top 3 customers who have spent the most money overall.
+Find customers whose total purchase amount exceeds ₹10,000.
+List customers along with the number of orders they have placed and the total amount they have spent.
+Find the customer who placed the highest-value order.
+Display all customers sorted by their total spending in descending order.
+Show customers whose average order amount is greater than ₹2,000.
+Find customers who have placed exactly one order.
+Show the percentage contribution of each customer to the total sales.
+

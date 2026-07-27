@@ -1,0 +1,123 @@
+Basic Queries
+Show all customers.
+List all products.
+Show all orders.
+Display all active customers.
+Show all products that cost more than $100.
+Find all customers from New York.
+Show all delivered orders.
+List products that are currently in stock.
+Display all customers with more than 100 loyalty points.
+Show orders placed after July 5, 2025.
+Sorting
+List customers sorted by loyalty points in descending order.
+Show products sorted by price from highest to lowest.
+Display orders sorted by order date.
+List products sorted alphabetically.
+Show customers sorted by registration date.
+Aggregate Functions
+How many customers are there?
+How many products are available?
+What is the total revenue from all orders?
+What is the average product price?
+What is the highest-priced product?
+What is the cheapest product?
+How many orders have been placed?
+What is the average order amount?
+What is the total loyalty points across all customers?
+How many products belong to the Electronics category?
+Joins
+Show each customer's orders.
+Display customer names along with their order amounts.
+Show every product purchased in each order.
+List all products purchased by Alice Johnson.
+Show all customers who have placed at least one order.
+Display customer names and payment methods.
+Show the products included in Order 1.
+List the quantity of every product ordered.
+Show all orders along with customer email addresses.
+Display customer names with their order statuses.
+GROUP BY
+Calculate total spending by each customer.
+Count how many orders each customer has placed.
+Show total sales by payment method.
+Calculate total revenue by order status.
+Count products in each category.
+Show total quantity sold for each product.
+Calculate average order amount for each customer.
+Show total revenue by city.
+Count customers in each state.
+Show total sales for each brand.
+HAVING
+Show customers who spent more than $500.
+List products sold more than three times.
+Show payment methods with more than one order.
+Find cities with more than one customer.
+Show brands whose total sales exceed $500.
+Subqueries
+Find customers who have never placed an order.
+Show products that have never been ordered.
+Find the customer who spent the most.
+Show the most expensive product.
+Find customers whose loyalty points are above the average.
+Show products priced above the average product price.
+Find orders whose amount is greater than the average order amount.
+Display customers who placed the earliest order.
+Find products with stock lower than the average stock.
+Show customers with the highest loyalty points.
+Complex Queries
+Which customer spent the most money overall?
+Which product generated the highest revenue?
+What are the top three best-selling products?
+Which city generated the highest revenue?
+Which customer ordered the largest number of items?
+Which products were purchased together in the same order?
+Show monthly revenue.
+Calculate total revenue after discounts.
+Find customers who purchased more than one product in a single order.
+Which payment method generated the highest revenue?
+Edge Cases
+Show customers who have not made any purchases.
+List products that have never been sold.
+Find cancelled orders.
+Show unpaid or pending orders.
+Display inactive customers.
+Find products with stock less than 30.
+Show customers without loyalty points.
+Find orders without a delivery date.
+Show products supplied by IKEA.
+List products weighing more than 5 kg.
+Natural Language Variations
+Who are my best customers?
+Which customer buys the most?
+Show me the latest orders.
+What did Alice purchase?
+Which products are almost out of stock?
+How much money have we made?
+Give me the revenue for each customer.
+Which items sell the most?
+Which customer has never bought anything?
+What are the top five most expensive products?
+Ambiguous / Clarification Tests
+
+
+
+Show customer details.
+Give me recent orders.
+Find expensive products.
+Show the best customer.
+Display top products.
+Find orders from last month.
+Show pending payments.
+List inactive users.
+Give me sales statistics.
+Show customer history.
+
+Edge cases:
+hi,how are you?,Show all customers.
+explain me about alxendar the great and show top 5 expensive products(not working)
+hi what is sql?.show Top 5 expensive products(working)
+
+----------------------negative prompts---------------
+
+Show the top 3 customers who got most discount  overall.
