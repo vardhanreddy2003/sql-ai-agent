@@ -1,0 +1,26 @@
+Table: customers
+
+Description:
+Stores customer information.
+
+Columns:
+customer_id (Primary Key): Unique customer ID
+first_name: Customer's first name
+last_name: Customer's last name
+email: Email address
+phone: Phone number
+dob: Date of birth
+gender: Gender
+address: Street address
+city: City
+state: State
+country: Country
+postal_code: Postal code
+registration_date: Date customer registered
+loyalty_points: Loyalty points
+status: Active or Inactive
+created_at
+updated_at
+
+Relationships:
+One customer can have many orders.

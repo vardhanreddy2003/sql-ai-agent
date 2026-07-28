@@ -1,0 +1,21 @@
+Table: orders
+
+Description:
+Stores customer orders.
+
+Columns:
+order_id (Primary Key)
+customer_id (Foreign Key -> customers.customer_id)
+order_date
+amount
+discount
+tax
+shipping_charge
+payment_method
+payment_status
+order_status
+delivery_date
+
+Relationships:
+Belongs to one customer.
+Contains many order_items.

@@ -1,0 +1,16 @@
+Table: order_items
+
+Description:
+Stores items within an order.
+
+Columns:
+order_item_id
+order_id
+product_id
+quantity
+unit_price
+subtotal
+
+Relationships:
+Belongs to an order.
+References a product.

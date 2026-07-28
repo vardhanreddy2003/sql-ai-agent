@@ -1,0 +1,16 @@
+Table: products
+
+Description:
+Stores product details.
+
+Columns:
+product_id
+product_name
+category
+brand
+price
+stock_quantity
+supplier_name
+
+Relationships:
+One product can appear in many order_items.
