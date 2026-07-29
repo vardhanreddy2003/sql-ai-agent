@@ -1,11 +1,14 @@
+from unittest import result
+
 from models.embedding_model import embedding_model
 from langchain_chroma import Chroma
 from rag.schema_loader import load_schema_docs
 from langchain_chroma import Chroma
 
+
 docs = load_schema_docs()
 
-def get_vectorstore():
+def get_retriever():
     vectorstore = Chroma(
         collection_name="schemas",
         persist_directory="schema_db",
@@ -17,5 +20,8 @@ def get_vectorstore():
         print("Documents added to Chroma.")
     else:
         print("Existing vector store loaded.")
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3})
+    
+    
 
-    return vectorstore
+    return retriever

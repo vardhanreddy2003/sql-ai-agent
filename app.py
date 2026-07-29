@@ -4,14 +4,15 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from graph.Chatbot_graph import validation_graph
 from db.DBConnection import getConnection
-from rag.vectorstore import get_vectorstore
+from rag.vectorstore import get_retriever
+from nodes.retrieve_schema import retrieve_schema
 from dotenv import load_dotenv
 load_dotenv()
 app=Flask(__name__)
 
 CORS(app)
 
-get_vectorstore()
+get_retriever()
 @app.route("/")
 def index():
     return "Testing 123"

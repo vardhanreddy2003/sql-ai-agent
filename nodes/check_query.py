@@ -10,9 +10,7 @@ from models.llm import model_creation
 def check_query(state:SQLAgentState):
     
 
-    schema_path="C:\\vardhan\\MY_FLASK_APP\\graph\\schema.sql"
-    with open(schema_path, 'r') as f:
-        state["schema"] = f.read()
+    
 
     prompt= PromptTemplate(
         template="""

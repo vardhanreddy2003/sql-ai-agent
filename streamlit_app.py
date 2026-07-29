@@ -98,8 +98,7 @@ if prompt:
 
                 response_data = response.json()
 
-                print("Backend Response:")
-                print(response_data)
+                
 
                 data = response_data.get("result", {})
 

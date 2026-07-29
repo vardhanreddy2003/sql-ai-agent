@@ -21,6 +21,7 @@ from nodes.harmful_input import harmful_input
 from nodes.execute_sql import execute_sql_query
 from nodes.summary import summary
 from nodes.general_chat import general_chat
+from nodes.retrieve_schema import retrieve_schema
 
 def validation_graph():
     graph=StateGraph(SQLAgentState)
@@ -34,9 +35,11 @@ def validation_graph():
     graph.add_node("summary",summary)
     graph.add_node("query_execution",execute_sql_query)
     graph.add_node("general_chat",general_chat)
+    graph.add_node("retrieve_schema",retrieve_schema)
 
     graph.add_edge(START,"intent_classification")
     graph.add_conditional_edges("intent_classification",intent_check)
+    graph.add_edge("retrieve_schema","check_query")
     graph.add_conditional_edges("check_query",opinion_on_info)
     graph.add_edge("irrelevant_input",END)
     graph.add_conditional_edges("is_destructive_sql",sql_harm_status)
