@@ -9,8 +9,7 @@ def retrieve_schema(state:SQLAgentState)->SQLAgentState:
     schema_info=retriever.invoke(state["input"])
     schema=""
     
-    for i in range(0,len(schema_info)):
-        schema+=schema_info[i].page_content
+    schema = "\n".join(doc.page_content for doc in schema_info)
     state["schema"]=schema
     return state
 
