@@ -11,3 +11,4 @@ class SQLAgentState(TypedDict):
     result:str
     query:str
     summary:str
+    Error:str
