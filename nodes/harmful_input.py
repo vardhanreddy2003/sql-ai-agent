@@ -1,8 +1,27 @@
     
+from typing import Literal
+
+from click import Command
+
 from graph.State import SQLAgentState
 
+from typing import Literal
+from langgraph.graph import END
+from langgraph.types import Command
 
-def harmful_input(state:SQLAgentState):
+def harmful_input(state: SQLAgentState) -> Command[Literal[END, "error_router"]]:
+    try:
+        return Command(
+            update={
+                "result": "The user is not authorized to perform this operation. Please try a different command."
+            },
+            goto=END
+        )
 
-    state["result"]="the user is not authorized to perform these operation. please try with a diff command"
-    return state
+    except Exception as e:
+        return Command(
+            update={
+                "Error": str(e)
+            },
+            goto="error_router"
+        )

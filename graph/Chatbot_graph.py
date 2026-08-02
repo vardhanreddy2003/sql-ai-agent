@@ -9,6 +9,7 @@ from typing import Literal
 from graph.State import SQLAgentState
 
 
+from nodes.error_router import error_router
 from nodes.intent_check import intent_check
 from nodes.intent_classification import intent_classification
 from nodes.build_query import build_query
@@ -36,17 +37,9 @@ def validation_graph():
     graph.add_node("query_execution",execute_sql_query)
     graph.add_node("general_chat",general_chat)
     graph.add_node("retrieve_schema",retrieve_schema)
+    graph.add_node("error_router",error_router)
 
-    graph.add_edge(START,"intent_classification")
-    graph.add_conditional_edges("intent_classification",intent_check)
-    graph.add_edge("retrieve_schema","check_query")
-    graph.add_conditional_edges("check_query",opinion_on_info)
-    graph.add_edge("irrelevant_input",END)
-    graph.add_conditional_edges("is_destructive_sql",sql_harm_status)
-    graph.add_edge("build_query","query_execution")
-    graph.add_edge("query_execution",END)
-    graph.add_edge("harmful_input",END)
-    graph.add_edge("general_chat",END)
-    workflow=graph.compile()
+    graph.add_edge(START, "intent_classification")
+
+    workflow = graph.compile()
     return workflow
-    
