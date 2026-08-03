@@ -62,7 +62,8 @@ def intent_classification(state:SQLAgentState)->Command[Literal["retrieve_schema
         else:
              return Command(
                              update={
-                                  "intent":intent
+                                  "intent":intent,
+                                  "retry_count":0
                              },
                              goto="general_chat"
                         )    
