@@ -4,23 +4,25 @@ Description:
 Stores customer information.
 
 Columns:
-customer_id (Primary Key): Unique customer ID
-first_name: Customer's first name
-last_name: Customer's last name
-email: Email address
-phone: Phone number
-dob: Date of birth
-gender: Gender
-address: Street address
-city: City
-state: State
-country: Country
-postal_code: Postal code
-registration_date: Date customer registered
-loyalty_points: Loyalty points
-status: Active or Inactive
+customer_id
+first_name
+last_name
+email
+phone_number
+date_of_birth
+gender
+address
+city
+state
+country
+postal_code
+registration_date
+loyalty_points
+customer_status
 created_at
 updated_at
 
 Relationships:
-One customer can have many orders.
+One customer can place many orders.
+One customer can write many reviews.
+One customer can have many wishlist items.

@@ -1,7 +1,7 @@
 Table: order_items
 
 Description:
-Stores items within an order.
+Stores products included in each order.
 
 Columns:
 order_item_id
@@ -9,8 +9,9 @@ order_id
 product_id
 quantity
 unit_price
+discount
 subtotal
 
 Relationships:
-Belongs to an order.
-References a product.
+Each order item belongs to one order.
+Each order item references one product.

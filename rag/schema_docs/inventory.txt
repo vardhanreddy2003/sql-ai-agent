@@ -1,0 +1,16 @@
+Table: inventory
+
+Description:
+Stores inventory information for products.
+
+Columns:
+inventory_id
+product_id
+warehouse_location
+available_stock
+reserved_stock
+last_updated
+
+Relationships:
+Each inventory record belongs to one product.
+One product can have inventory in multiple warehouses.

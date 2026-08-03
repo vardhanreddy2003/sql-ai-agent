@@ -1,0 +1,18 @@
+Table: reviews
+
+Description:
+Stores customer reviews for products.
+
+Columns:
+review_id
+customer_id
+product_id
+rating
+review_text
+review_date
+
+Relationships:
+Each review belongs to one customer.
+Each review belongs to one product.
+One customer can write many reviews.
+One product can have many reviews.
