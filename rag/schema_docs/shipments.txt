@@ -1,0 +1,16 @@
+Table: shipments
+
+Description:
+Stores shipment information for customer orders.
+
+Columns:
+shipment_id
+order_id
+courier_name
+tracking_number
+shipped_date
+delivered_date
+shipment_status
+
+Relationships:
+Each shipment belongs to one order.

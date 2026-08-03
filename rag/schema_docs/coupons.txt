@@ -1,0 +1,15 @@
+Table: coupons
+
+Description:
+Stores discount coupons.
+
+Columns:
+coupon_id
+coupon_code
+discount_percentage
+minimum_order_amount
+expiry_date
+status
+
+Relationships:
+Coupons can be applied to customer orders.

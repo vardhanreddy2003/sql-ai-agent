@@ -1,0 +1,13 @@
+Table: categories
+
+Description:
+Stores product category information.
+
+Columns:
+category_id
+category_name
+description
+created_at
+
+Relationships:
+One category can contain many products.

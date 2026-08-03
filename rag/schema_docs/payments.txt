@@ -1,0 +1,16 @@
+Table: payments
+
+Description:
+Stores payment information for orders.
+
+Columns:
+payment_id
+order_id
+payment_date
+payment_method
+amount
+payment_status
+transaction_id
+
+Relationships:
+Each payment belongs to one order.

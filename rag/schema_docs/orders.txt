@@ -4,18 +4,23 @@ Description:
 Stores customer orders.
 
 Columns:
-order_id (Primary Key)
-customer_id (Foreign Key -> customers.customer_id)
+order_id
+customer_id
 order_date
+order_status
 amount
 discount
 tax
 shipping_charge
 payment_method
 payment_status
-order_status
+shipping_address
 delivery_date
+created_at
+updated_at
 
 Relationships:
-Belongs to one customer.
-Contains many order_items.
+Each order belongs to one customer.
+One order can contain many order items.
+Each order has one payment.
+Each order has one shipment.

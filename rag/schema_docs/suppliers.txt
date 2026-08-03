@@ -1,0 +1,17 @@
+Table: suppliers
+
+Description:
+Stores supplier information.
+
+Columns:
+supplier_id
+supplier_name
+contact_person
+email
+phone
+city
+country
+created_at
+
+Relationships:
+One supplier can supply many products.

@@ -1,0 +1,16 @@
+Table: wishlists
+
+Description:
+Stores products saved by customers for future purchase.
+
+Columns:
+wishlist_id
+customer_id
+product_id
+added_date
+
+Relationships:
+Each wishlist item belongs to one customer.
+Each wishlist item references one product.
+A customer can save many products.
+A product can appear in many customer wishlists.

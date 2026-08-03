@@ -1,16 +1,25 @@
 Table: products
 
 Description:
-Stores product details.
+Stores product information.
 
 Columns:
 product_id
 product_name
-category
-brand
+category_id
+supplier_id
+description
 price
 stock_quantity
-supplier_name
+sku
+weight
+created_at
+updated_at
 
 Relationships:
-One product can appear in many order_items.
+Each product belongs to one category.
+Each product is supplied by one supplier.
+One product can appear in many order items.
+One product can have many reviews.
+One product can have inventory records.
+One product can appear in many wishlists.
