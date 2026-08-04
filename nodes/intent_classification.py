@@ -48,7 +48,7 @@ def intent_classification(state:SQLAgentState)->Command[Literal["retrieve_schema
         data=model.invoke(intent_prompt)
         
         state["intent"]=data.intent
-        print("query",state["input"])
+        print("user_request:",state["input"])
         intent=data.intent.strip().lower()
         print("intent_check",intent)
         if(intent=="sql_query"):
