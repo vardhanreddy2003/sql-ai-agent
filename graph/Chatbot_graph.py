@@ -24,6 +24,7 @@ from nodes.execute_sql import execute_sql_query
 from nodes.summary import summary
 from nodes.general_chat import general_chat
 from nodes.retrieve_schema import retrieve_schema
+from nodes.send_mail import send_alert_email
 
 def validation_graph():
     graph=StateGraph(SQLAgentState)
@@ -40,6 +41,7 @@ def validation_graph():
     graph.add_node("retrieve_schema",retrieve_schema)
     graph.add_node("error_router",error_router)
     graph.add_node("remediate_sql",remediate_sql)
+    graph.add_node("send_mail",send_alert_email)
 
     graph.add_edge(START, "intent_classification")
 
