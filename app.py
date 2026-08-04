@@ -34,6 +34,7 @@ def answer():
             "query_result":res.get("query_result",None),
             "result":res.get("result",None),
             "Error":res.get("Error",None),
+            "summary":res.get("summary",None)
             
         }
     )

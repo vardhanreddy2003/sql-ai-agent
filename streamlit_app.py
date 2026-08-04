@@ -121,6 +121,7 @@ if prompt:
                 query_result = response_data.get("query_result",None)
                 answer = response_data.get("result",None)
                 workflow_error = response_data.get("Error", None)
+                summary=response_data.get("summary",None)
                 print("okay")
                 
 
@@ -177,6 +178,8 @@ if prompt:
                             query_result,
                             use_container_width=True
                         )
+                    with st.expander("Summary", expanded=True):
+                        st.write(summary)
 
                     st.session_state.messages.append(
                         {
