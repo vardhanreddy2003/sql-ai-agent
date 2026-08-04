@@ -1,0 +1,28 @@
+2026-08-04 14:07:53,067 - __main__ - INFO - Initializing vector retriever...
+2026-08-04 14:07:53,067 - __main__ - ERROR - Failed to initialize vector retriever: 1 validation error for GoogleGenerativeAIEmbeddings
+  Value error, API key required for Gemini Developer API. Provide api_key parameter or set GOOGLE_API_KEY/GEMINI_API_KEY environment variable. [type=value_error, input_value={'model': 'gemini-embedding-2', 'api_key': None}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+2026-08-04 14:07:53,069 - __main__ - INFO - Starting Flask app on port 5000
+2026-08-04 14:07:53,070 - __main__ - INFO - Debug mode: True
+2026-08-04 14:07:53,178 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.31.13.221:5000
+2026-08-04 14:07:53,179 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-08-04 14:07:53,191 - werkzeug - INFO -  * Restarting with watchdog (windowsapi)
+2026-08-04 14:07:57,345 - __main__ - INFO - Initializing vector retriever...
+2026-08-04 14:07:57,347 - __main__ - ERROR - Failed to initialize vector retriever: 1 validation error for GoogleGenerativeAIEmbeddings
+  Value error, API key required for Gemini Developer API. Provide api_key parameter or set GOOGLE_API_KEY/GEMINI_API_KEY environment variable. [type=value_error, input_value={'model': 'gemini-embedding-2', 'api_key': None}, input_type=dict]
+    For further information visit https://errors.pydantic.dev/2.13/v/value_error
+2026-08-04 14:07:57,350 - __main__ - INFO - Starting Flask app on port 5000
+2026-08-04 14:07:57,352 - __main__ - INFO - Debug mode: True
+2026-08-04 14:07:57,381 - werkzeug - WARNING -  * Debugger is active!
+2026-08-04 14:07:57,398 - werkzeug - INFO -  * Debugger PIN: 269-397-181
+2026-08-04 14:09:31,625 - __main__ - INFO - GET /health - 127.0.0.1
+2026-08-04 14:09:35,682 - __main__ - ERROR - Database health check failed: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-08-04 14:09:35,684 - werkzeug - INFO - 127.0.0.1 - - [04/Aug/2026 14:09:35] "[35m[1mGET /health HTTP/1.1[0m" 503 -
+2026-08-04 14:09:35,732 - __main__ - INFO - GET /getStats - 127.0.0.1
+2026-08-04 14:09:39,746 - __main__ - ERROR - Database error: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-08-04 14:09:43,752 - __main__ - ERROR - Database error: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-08-04 14:09:47,776 - __main__ - ERROR - Database error: 2003 (HY000): Can't connect to MySQL server on 'localhost:3306' (10061)
+2026-08-04 14:09:47,776 - werkzeug - INFO - 127.0.0.1 - - [04/Aug/2026 14:09:47] "GET /getStats HTTP/1.1" 200 -

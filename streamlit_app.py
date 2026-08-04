@@ -1,214 +1,501 @@
 import streamlit as st
 import requests
+from datetime import datetime
+import pandas as pd
+from typing import Dict, Any, Optional
+import json
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
 
 st.set_page_config(
     page_title="SQL AI Agent",
     page_icon="🤖",
-    layout="wide"
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-API_URL = "http://127.0.0.1:5000/getAnswer"
+# API Configuration
+API_BASE_URL = "http://127.0.0.1:5000"
+REQUEST_TIMEOUT = 120
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+# ============================================================================
+# CUSTOM CSS
+# ============================================================================
 
-st.title("🤖 SQL AI Agent")
-st.caption("Ask questions about your database in natural language.")
+st.markdown("""
+    <style>
+    /* Main container */
+    .main {
+        padding: 1rem 2rem;
+    }
+    
+    /* Headers */
+    h1 {
+        color: #1f77b4;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: #f0f2f6;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+    
+    /* Code blocks */
+    .stCodeBlock {
+        border-radius: 5px;
+        border: 1px solid #e0e0e0;
+    }
+    
+    /* Buttons */
+    .stButton > button {
+        border-radius: 5px;
+        font-weight: 500;
+        transition: all 0.3s;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    
+    /* Metrics */
+    [data-testid="stMetricValue"] {
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+    
+    /* Success/Error boxes */
+    .success-message {
+        padding: 1rem;
+        border-radius: 5px;
+        background-color: #d4edda;
+        border-left: 4px solid #28a745;
+        margin: 1rem 0;
+    }
+    
+    .error-message {
+        padding: 1rem;
+        border-radius: 5px;
+        background-color: #f8d7da;
+        border-left: 4px solid #dc3545;
+        margin: 1rem 0;
+    }
+    
+    /* Chat input */
+    .stChatInput {
+        border-radius: 10px;
+    }
+    
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: #f8f9fa;
+    }
+    
+    /* Download button */
+    .stDownloadButton > button {
+        background-color: #28a745;
+        color: white;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# ---------------- Sidebar ---------------- #
+# ============================================================================
+# SESSION STATE INITIALIZATION
+# ============================================================================
 
-with st.sidebar:
-
-    st.header("Example Questions")
-
-    examples = [
-        "Show all customers",
-        "List all active customers",
-        "Show each customer's orders",
-        "Top 5 expensive products"
-    ]
-
-    for example in examples:
-        st.write(f"• {example}")
-
-    st.divider()
-
-    if st.button("🗑️ Clear Chat"):
+def initialize_session_state():
+    """Initialize all session state variables."""
+    if "messages" not in st.session_state:
         st.session_state.messages = []
-        st.rerun()
+    if "request_count" not in st.session_state:
+        st.session_state.request_count = 0
+    if "api_status" not in st.session_state:
+        st.session_state.api_status = "unknown"
+    if "db_stats" not in st.session_state:
+        st.session_state.db_stats = {}
 
-# ---------------- Chat History ---------------- #
+initialize_session_state()
 
-for message in st.session_state.messages:
+# ============================================================================
+# API FUNCTIONS
+# ============================================================================
 
-    with st.chat_message(message["role"]):
+def check_api_health() -> Dict[str, Any]:
+    """Check API health status."""
+    try:
+        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+        if response.status_code == 200:
+            return response.json()
+        return {"success": False, "data": {"status": "unavailable"}}
+    except:
+        return {"success": False, "data": {"status": "unavailable"}}
 
-        st.markdown(message["content"])
+def make_query_request(question: str) -> Optional[Dict[str, Any]]:
+    """Make API request to process question."""
+    try:
+        response = requests.post(
+            f"{API_BASE_URL}/getAnswer",
+            json={"question": question},
+            timeout=REQUEST_TIMEOUT,
+            headers={"Content-Type": "application/json"}
+        )
+        
+        if response.status_code == 200:
+            st.session_state.request_count += 1
+            return response.json()
+        else:
+            error_data = response.json() if response.headers.get('content-type') == 'application/json' else {}
+            st.error(f"❌ API Error {response.status_code}: {error_data.get('message', 'Unknown error')}")
+            return None
+    
+    except requests.exceptions.Timeout:
+        st.error("⏱️ Request timed out. Please try again.")
+        return None
+    
+    except requests.exceptions.ConnectionError:
+        st.error("🔌 Cannot connect to API. Please ensure the backend is running on port 5000.")
+        return None
+    
+    except Exception as e:
+        st.error(f"❌ Unexpected Error: {str(e)}")
+        return None
 
-        if message["role"] == "assistant":
+def get_database_stats() -> Optional[Dict[str, Any]]:
+    """Get database statistics."""
+    try:
+        response = requests.get(f"{API_BASE_URL}/getStats", timeout=10)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except:
+        return None
 
-            # Workflow Error
-            if message.get("error"):
+# ============================================================================
+# UI HELPER FUNCTIONS
+# ============================================================================
 
-                with st.expander("Workflow Error", expanded=True):
-                    st.error(message["error"])
-
-            # Database Error
-            elif message.get("database_error"):
-
-                if message.get("query"):
-                    with st.expander("Generated SQL", expanded=True):
-                        st.code(message["query"], language="sql")
-
-                with st.expander("Database Error", expanded=True):
-                    st.error(message["database_error"])
-
-            # SQL Success
-            elif message.get("query"):
-
-                with st.expander("Generated SQL", expanded=True):
-                    st.code(message["query"], language="sql")
-
-                with st.expander("Database Result", expanded=True):
-                    st.dataframe(
-                        message.get("query_result", []),
-                        use_container_width=True
-                    )
-
-            # Normal Response
-            elif message.get("result"):
-
-                with st.expander("Result", expanded=True):
-                    st.write(message["result"])
-
-# ---------------- User Input ---------------- #
-
-prompt = st.chat_input("Ask a SQL question...")
-
-if prompt:
-
-    # Display User Message
-    st.session_state.messages.append(
-        {
-            "role": "user",
-            "content": prompt
-        }
-    )
-
-    with st.chat_message("user"):
-        st.write(prompt)
-
-    # Assistant Response
-    with st.chat_message("assistant"):
-
-        with st.spinner("Generating response..."):
-
-            try:
-
-                response = requests.post(
-                    API_URL,
-                    json={"question": prompt},
-                    timeout=120
-                )
-
-                response.raise_for_status()
-
-                response_data = response.json()
-
-                
-
-                query = response_data.get("query", "")
-                query_result = response_data.get("query_result",None)
-                answer = response_data.get("result",None)
-                workflow_error = response_data.get("Error", None)
-                summary=response_data.get("summary",None)
-                print("okay")
-                
-
-                #---------------- Workflow Error ---------------- #
-
-                if workflow_error:
-
-                    st.error("⚠️ Workflow Error")
-
-                    with st.expander("Workflow Error Details", expanded=True):
-                        st.write(workflow_error)
-
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": "⚠️ Workflow Error",
-                            "error": workflow_error
-                        }
-                    )
-
-                # ---------------- Database Error ---------------- #
-
-                # if database_error:
-
-                #     st.error("❌ Database Execution Failed")
-
-                #     if query:
-                #         with st.expander("Generated SQL", expanded=True):
-                #             st.code(query, language="sql")
-
-                #     with st.expander("Error", expanded=True):
-                #         st.write(workflow_error)
-
-                #     st.session_state.messages.append(
-                #         {
-                #             "role": "assistant",
-                #             "content": "❌ Database Execution Failed",
-                #             "query": query,
-                #             "database_error": workflow_error
-                #         }
-                #     )
-
-                # ---------------- SQL Success ---------------- #
-
-                elif query.strip():
-
-                    st.success("✅ Query generated successfully.")
-
-                    with st.expander("Generated SQL", expanded=True):
-                        st.code(query, language="sql")
-
-                    with st.expander("Database Result", expanded=True):
-                        st.dataframe(
-                            query_result,
+def display_sql_result(data: Dict[str, Any]):
+    """Display SQL query results."""
+    query = data.get("query", "")
+    query_result = data.get("query_result")
+    summary = data.get("summary")
+    
+    st.success("✅ Query executed successfully")
+    
+    # Display SQL Query
+    with st.expander("📝 Generated SQL Query", expanded=True):
+        st.code(query, language="sql")
+        
+        # Copy button simulation
+        col1, col2 = st.columns([6, 1])
+        with col2:
+            if st.button("📋 Copy", key=f"copy_{hash(query)}"):
+                st.toast("Query copied to clipboard!")
+    
+    # Display Results
+    if query_result is not None:
+        with st.expander("📊 Query Results", expanded=True):
+            if isinstance(query_result, list):
+                if len(query_result) > 0:
+                    try:
+                        # Convert to DataFrame
+                        df = pd.DataFrame(query_result)
+                        
+                        # Display metrics
+                        col1, col2, col3 = st.columns(3)
+                        with col1:
+                            st.metric("Total Rows", len(df))
+                        with col2:
+                            st.metric("Total Columns", len(df.columns))
+                        with col3:
+                            st.metric("Memory Usage", f"{df.memory_usage(deep=True).sum() / 1024:.2f} KB")
+                        
+                        st.dataframe(df, use_container_width=True, height=400)
+                        
+                        # Download button
+                        csv = df.to_csv(index=False)
+                        st.download_button(
+                            label="📥 Download as CSV",
+                            data=csv,
+                            file_name=f"query_result_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
+                            mime="text/csv",
                             use_container_width=True
                         )
-                    with st.expander("Summary", expanded=True):
-                        st.write(summary)
-
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": "✅ Query generated successfully.",
-                            "query": query,
-                            "query_result": query_result
-                        }
-                    )
-
-                # ---------------- Normal Response ---------------- #
-
+                    except Exception as e:
+                        st.warning(f"Could not convert to DataFrame: {str(e)}")
+                        st.json(query_result)
                 else:
+                    st.info("✨ Query executed successfully but returned no results.")
+            else:
+                st.write(query_result)
+    
+    # Display Summary
+    if summary:
+        with st.expander("💡 AI Summary", expanded=True):
+            st.markdown(f"**{summary}**")
 
-                    st.markdown("🤖😊 I can generate SQL queries for you. Wanna give it a try? 🚀")
+def display_error(data: Dict[str, Any]):
+    """Display error messages."""
+    error = data.get("error", "Unknown error")
+    query = data.get("query", "")
+    
+    st.error("❌ An error occurred while processing your request")
+    
+    # Show query if available
+    if query:
+        with st.expander("📝 Generated SQL Query", expanded=False):
+            st.code(query, language="sql")
+    
+    with st.expander("⚠️ Error Details", expanded=True):
+        st.error(error)
+        
+        # Provide helpful suggestions
+        st.markdown("**💡 Suggestions:**")
+        st.markdown("- Check if the table/column names are correct")
+        st.markdown("- Verify your database connection")
+        st.markdown("- Try rephrasing your question")
 
-                    with st.expander("Result", expanded=True):
-                        st.write(answer)
+def display_normal_response(data: Dict[str, Any]):
+    """Display normal text response."""
+    result = data.get("result", "")
+    
+    if result:
+        st.info("💬 Response")
+        with st.expander("📄 Details", expanded=True):
+            st.markdown(result)
+    else:
+        st.markdown("""
+        ### 🤖 Welcome to SQL AI Agent!
+        
+        I can help you query your database using natural language. Here's what I can do:
+        
+        - 📊 Generate SQL queries from your questions
+        - 🔍 Retrieve and analyze data
+        - 📈 Provide summaries and insights
+        
+        **Try asking me something!** 👇
+        """)
 
-                    st.session_state.messages.append(
-                        {
-                            "role": "assistant",
-                            "content": "🤖😊 I can generate SQL queries for you. Wanna give it a try? 🚀",
-                            "result": answer
-                        }
-                    )
+def create_message_dict(role: str, content: str, **kwargs) -> Dict[str, Any]:
+    """Create a standardized message dictionary."""
+    message = {
+        "role": role,
+        "content": content,
+        "timestamp": datetime.now().isoformat(),
+        **kwargs
+    }
+    return message
 
-            except requests.exceptions.RequestException as e:
-                st.error(f"Connection Error: {e}")
+# ============================================================================
+# SIDEBAR
+# ============================================================================
 
-            except Exception as e:
-                st.error(f"Unexpected Error: {e}")
+with st.sidebar:
+    st.image("https://img.icons8.com/fluency/96/000000/bot.png", width=80)
+    st.title("SQL AI Agent")
+    
+    st.divider()
+    
+    # API Health Status
+    st.subheader("🔌 System Status")
+    health_data = check_api_health()
+    
+    if health_data.get("success"):
+        services = health_data.get("data", {}).get("services", {})
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            api_status = services.get("api", "unknown")
+            if api_status == "operational":
+                st.success("✅ API")
+            else:
+                st.error("❌ API")
+        
+        with col2:
+            db_status = services.get("database", "unknown")
+            if db_status == "operational":
+                st.success("✅ Database")
+            else:
+                st.error("❌ Database")
+    else:
+        st.error("❌ System Offline")
+    
+    st.divider()
+    
+    # Database Statistics
+    st.subheader("📊 Database Stats")
+    stats_data = get_database_stats()
+    
+    if stats_data and stats_data.get("success"):
+        stats = stats_data.get("data", {}).get("statistics", {})
+        for table, count in stats.items():
+            st.metric(table.capitalize(), f"{count:,}")
+    else:
+        st.info("Stats unavailable")
+    
+    st.divider()
+    
+    # Session Statistics
+    st.subheader("📈 Session Stats")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("Queries", st.session_state.request_count)
+    with col2:
+        st.metric("Messages", len(st.session_state.messages))
+    
+    st.divider()
+    
+    # Example Questions
+    st.subheader("💡 Example Questions")
+    
+    examples = [
+        "Show all customers",
+        "List active customers",
+        "Top 5 expensive products",
+        "Count total orders",
+        "Average order value",
+        "Products with low stock",
+        "Recent orders this month"
+    ]
+    
+    for example in examples:
+        if st.button(f"💬 {example}", key=f"ex_{example}", use_container_width=True):
+            st.session_state.example_clicked = example
+    
+    st.divider()
+    
+    # Clear Chat Button
+    if st.button("🗑️ Clear Chat History", use_container_width=True, type="primary"):
+        st.session_state.messages = []
+        st.session_state.request_count = 0
+        st.rerun()
+    
+    st.divider()
+    
+    # Footer
+    st.caption("Built with ❤️ using Streamlit & Flask")
+    st.caption(f"Version 1.0.0 | {datetime.now().strftime('%Y')}")
+
+# ============================================================================
+# MAIN CONTENT
+# ============================================================================
+
+st.title("🤖 SQL AI Agent")
+st.caption("💬 Ask questions about your database in natural language")
+
+# ============================================================================
+# CHAT HISTORY DISPLAY
+# ============================================================================
+
+for idx, message in enumerate(st.session_state.messages):
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+        
+        if message["role"] == "assistant":
+            # Error Response
+            if message.get("has_error"):
+                display_error(message)
+            
+            # SQL Success Response
+            elif message.get("has_query"):
+                display_sql_result(message)
+            
+            # Normal Response
+            else:
+                display_normal_response(message)
+
+# ============================================================================
+# HANDLE EXAMPLE CLICKS
+# ============================================================================
+
+if hasattr(st.session_state, 'example_clicked'):
+    prompt = st.session_state.example_clicked
+    delattr(st.session_state, 'example_clicked')
+else:
+    prompt = st.chat_input("💭 Ask a question about your database...")
+
+# ============================================================================
+# USER INPUT PROCESSING
+# ============================================================================
+
+if prompt:
+    # Display user message
+    user_message = create_message_dict("user", prompt)
+    st.session_state.messages.append(user_message)
+    
+    with st.chat_message("user"):
+        st.markdown(prompt)
+    
+    # Generate assistant response
+    with st.chat_message("assistant"):
+        with st.spinner("🔄 Processing your question..."):
+            response_data = make_query_request(prompt)
+            
+            if response_data and response_data.get("success"):
+                # Determine response type
+                has_query = response_data.get("has_query", False)
+                has_error = response_data.get("has_error", False)
+                
+                # Create assistant message
+                if has_error:
+                    content = "❌ Error occurred"
+                    display_error(response_data)
+                elif has_query:
+                    content = "✅ Query executed successfully"
+                    display_sql_result(response_data)
+                else:
+                    content = "💬 Response"
+                    display_normal_response(response_data)
+                
+                # Save to session state
+                assistant_message = create_message_dict(
+                    "assistant",
+                    content,
+                    **response_data
+                )
+                st.session_state.messages.append(assistant_message)
+            
+            elif response_data and not response_data.get("success"):
+                # API returned error
+                error_content = "❌ Request failed"
+                st.error(response_data.get("error", "Unknown error"))
+                
+                assistant_message = create_message_dict(
+                    "assistant",
+                    error_content,
+                    has_error=True,
+                    error=response_data.get("message", "Unknown error")
+                )
+                st.session_state.messages.append(assistant_message)
+            
+            else:
+                # No response from API
+                error_content = "❌ Failed to connect to API"
+                st.error("Please check if the backend server is running.")
+                
+                assistant_message = create_message_dict(
+                    "assistant",
+                    error_content,
+                    has_error=True,
+                    error="Connection failed"
+                )
+                st.session_state.messages.append(assistant_message)
+
+# ============================================================================
+# FOOTER
+# ============================================================================
+
+st.divider()
+
+col1, col2, col3 = st.columns(3)
+with col1:
+    st.caption("💡 **Tip:** Click example questions in the sidebar")
+with col2:
+    st.caption("🔍 **Pro Tip:** Be specific in your questions")
+with col3:
+    st.caption(f"⏰ Last updated: {datetime.now().strftime('%H:%M:%S')}")
