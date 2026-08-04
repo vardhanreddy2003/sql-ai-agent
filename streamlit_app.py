@@ -18,6 +18,7 @@ st.caption("Ask questions about your database in natural language.")
 # ---------------- Sidebar ---------------- #
 
 with st.sidebar:
+
     st.header("Example Questions")
 
     examples = [
@@ -46,8 +47,24 @@ for message in st.session_state.messages:
 
         if message["role"] == "assistant":
 
-            # SQL Response
-            if message.get("query"):
+            # Workflow Error
+            if message.get("error"):
+
+                with st.expander("Workflow Error", expanded=True):
+                    st.error(message["error"])
+
+            # Database Error
+            elif message.get("database_error"):
+
+                if message.get("query"):
+                    with st.expander("Generated SQL", expanded=True):
+                        st.code(message["query"], language="sql")
+
+                with st.expander("Database Error", expanded=True):
+                    st.error(message["database_error"])
+
+            # SQL Success
+            elif message.get("query"):
 
                 with st.expander("Generated SQL", expanded=True):
                     st.code(message["query"], language="sql")
@@ -58,7 +75,7 @@ for message in st.session_state.messages:
                         use_container_width=True
                     )
 
-            # Normal Text Response
+            # Normal Response
             elif message.get("result"):
 
                 with st.expander("Result", expanded=True):
@@ -70,7 +87,7 @@ prompt = st.chat_input("Ask a SQL question...")
 
 if prompt:
 
-    # Display user message
+    # Display User Message
     st.session_state.messages.append(
         {
             "role": "user",
@@ -81,7 +98,7 @@ if prompt:
     with st.chat_message("user"):
         st.write(prompt)
 
-    # Assistant response
+    # Assistant Response
     with st.chat_message("assistant"):
 
         with st.spinner("Generating response..."):
@@ -98,20 +115,59 @@ if prompt:
 
                 response_data = response.json()
 
-                
-
                 data = response_data.get("result", {})
 
                 query = data.get("query", "")
                 query_result = data.get("query_result", [])
                 answer = data.get("result", "No result")
+                workflow_error = data.get("Error", "")
+                database_error = data.get("database_error", "")
 
-               
+                # ---------------- Workflow Error ---------------- #
 
-                # ---------------- SQL Response ---------------- #
+                # if workflow_error:
 
-                if query.strip():
-                    st.markdown("✅ Query generated successfully.")
+                #     st.error("⚠️ Workflow Error")
+
+                #     with st.expander("Workflow Error Details", expanded=True):
+                #         st.write(workflow_error)
+
+                #     st.session_state.messages.append(
+                #         {
+                #             "role": "assistant",
+                #             "content": "⚠️ Workflow Error",
+                #             "error": workflow_error
+                #         }
+                #     )
+
+                # ---------------- Database Error ---------------- #
+
+                if database_error:
+
+                    st.error("❌ Database Execution Failed")
+
+                    if query:
+                        with st.expander("Generated SQL", expanded=True):
+                            st.code(query, language="sql")
+
+                    with st.expander("Error", expanded=True):
+                        st.write(workflow_error)
+
+                    st.session_state.messages.append(
+                        {
+                            "role": "assistant",
+                            "content": "❌ Database Execution Failed",
+                            "query": query,
+                            "database_error": workflow_error
+                        }
+                    )
+
+                # ---------------- SQL Success ---------------- #
+
+                elif query.strip():
+
+                    st.success("✅ Query generated successfully.")
+
                     with st.expander("Generated SQL", expanded=True):
                         st.code(query, language="sql")
 
@@ -133,7 +189,9 @@ if prompt:
                 # ---------------- Normal Response ---------------- #
 
                 else:
+
                     st.markdown("🤖😊 I can generate SQL queries for you. Wanna give it a try? 🚀")
+
                     with st.expander("Result", expanded=True):
                         st.write(answer)
 

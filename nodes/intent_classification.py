@@ -54,7 +54,8 @@ def intent_classification(state:SQLAgentState)->Command[Literal["retrieve_schema
         if(intent=="sql_query"):
             return Command(
                  update={
-                      "intent":intent
+                      "intent":intent,
+                      "retry_count":0
                  },
                  goto="retrieve_schema"
             )

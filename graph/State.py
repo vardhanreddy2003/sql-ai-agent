@@ -12,3 +12,5 @@ class SQLAgentState(TypedDict):
     query:str
     summary:str
     Error:str
+    database_error:str
+    retry_count:int

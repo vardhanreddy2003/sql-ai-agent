@@ -17,6 +17,7 @@ from nodes.check_query import check_query
 from nodes.is_destructive_sql import is_destructive_sql
 from nodes.irrelevant_input import irrelevant_input
 from nodes.opinion_on_info import opinion_on_info
+from nodes.remediate_sql import remediate_sql
 from nodes.sql_harm_status import sql_harm_status
 from nodes.harmful_input import harmful_input
 from nodes.execute_sql import execute_sql_query
@@ -38,6 +39,7 @@ def validation_graph():
     graph.add_node("general_chat",general_chat)
     graph.add_node("retrieve_schema",retrieve_schema)
     graph.add_node("error_router",error_router)
+    graph.add_node("remediate_sql",remediate_sql)
 
     graph.add_edge(START, "intent_classification")
 
