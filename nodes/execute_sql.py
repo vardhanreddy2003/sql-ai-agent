@@ -16,8 +16,8 @@ def execute_sql_query(state:SQLAgentState)-> Command[Literal[END,"error_router",
         conn=getConnection()
         
         cursor=conn.cursor(dictionary=True)
-        print("exceutinh exceute node") 
-        cursor.execute("se")
+        
+        cursor.execute(state["query"])
         rows=cursor.fetchall()
         
         
