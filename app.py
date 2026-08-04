@@ -29,7 +29,13 @@ def answer():
 
     
     return jsonify(
-        {"result":res}
+        {
+            "query":res.get("query",""),
+            "query_result":res.get("query_result",None),
+            "result":res.get("result",None),
+            "Error":res.get("Error",None),
+            
+        }
     )
 
 @app.route("/getAllDetails")

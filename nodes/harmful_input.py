@@ -9,13 +9,13 @@ from typing import Literal
 from langgraph.graph import END
 from langgraph.types import Command
 
-def harmful_input(state: SQLAgentState) -> Command[Literal[END, "error_router"]]:
+def harmful_input(state: SQLAgentState) -> Command[Literal[END, "error_router","send_mail"]]:
     try:
         return Command(
             update={
                 "result": "The user is not authorized to perform this operation. Please try a different command."
             },
-            goto=END
+            goto="send_mail"
         )
 
     except Exception as e:
