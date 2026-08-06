@@ -2,3 +2,5 @@
 .env
 .env.local
 .env.*
+query_db/
+schema_db/
