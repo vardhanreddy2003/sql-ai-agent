@@ -50,8 +50,6 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
                 Database Error
                 =========================
                 {database_error}
-        
-                Corrected SQL:
                 """)
         sql_correction_prompt = sql_correction_prompt.format(
                     user_request=state["input"],
@@ -59,9 +57,12 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
                     generated_sql=state["query"],
                     database_error=state["database_error"]
                 )
+
+        print("sql_correction_prompt:",sql_correction_prompt)
         model=model_creation().with_structured_output(Query_evaluation)
         data=model.invoke(sql_correction_prompt)
         query=data.query
+        print("remediated query:",query)
         return Command(
                             update={"query":query,
                             "retry_count":state["retry_count"]+1},
