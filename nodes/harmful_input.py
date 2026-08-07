@@ -19,9 +19,8 @@ def harmful_input(state: SQLAgentState) -> Command[Literal[END, "error_router","
         )
 
     except Exception as e:
+        print("error at harmful_input", e)
         return Command(
-            update={
-                "Error": str(e)
-            },
+            update={"Error": str(e)},
             goto="error_router"
         )

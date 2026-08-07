@@ -45,8 +45,9 @@ def build_query(state:SQLAgentState)-> Command[Literal["query_execution","error_
             update={"query":query},
             goto="query_execution"
         )
-    except:
+    except Exception as e:
+        print("error at build_query",e)
         return Command(
-            update={"Error":"error at build_query"},
+            update={"Error":str(e)},
             goto="error_router"
         )

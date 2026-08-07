@@ -120,13 +120,35 @@ if prompt:
                 query = response_data.get("query", "")
                 query_result = response_data.get("query_result",None)
                 answer = response_data.get("result",None)
-                workflow_error = response_data.get("Error", None)
+                workflow_error = response_data.get("workflow_error", None)
+                database_error = response_data.get("database_error", None)
                 print("okay")
+
+                #---------------- Database Error ---------------- #
+                
+                if database_error:
+                
+                    st.error("❌ Database Execution Failed")
+                
+                    
+                                
+                
+                    with st.expander("Error", expanded=True):
+                            st.write(database_error)
+                
+                    st.session_state.messages.append(
+                        {
+                                            "role": "assistant",
+                                            "content": "❌ Database Execution Failed",
+                                            "query": query,
+                                            "database_error": workflow_error
+                        }
+                    )
                 
 
                 #---------------- Workflow Error ---------------- #
 
-                if workflow_error:
+                elif workflow_error:
 
                     st.error("⚠️ Workflow Error")
 
@@ -141,28 +163,7 @@ if prompt:
                         }
                     )
 
-                # ---------------- Database Error ---------------- #
-
-                # if database_error:
-
-                #     st.error("❌ Database Execution Failed")
-
-                #     if query:
-                #         with st.expander("Generated SQL", expanded=True):
-                #             st.code(query, language="sql")
-
-                #     with st.expander("Error", expanded=True):
-                #         st.write(workflow_error)
-
-                #     st.session_state.messages.append(
-                #         {
-                #             "role": "assistant",
-                #             "content": "❌ Database Execution Failed",
-                #             "query": query,
-                #             "database_error": workflow_error
-                #         }
-                #     )
-
+                
                 # ---------------- SQL Success ---------------- #
 
                 elif query.strip():

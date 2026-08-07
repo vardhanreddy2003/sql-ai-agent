@@ -13,8 +13,8 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
             print("retry count exceeded")
             return Command(
                 update={"result":"unable to process these sql request",
-                        "Error":"we cant process this sql request"},
-                goto=END
+                        "database_error":"we cant process this sql request"},
+                goto="error_router"
             )
        
         sql_correction_prompt = PromptTemplate.from_template("""
@@ -50,8 +50,6 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
                 Database Error
                 =========================
                 {database_error}
-        
-                Corrected SQL:
                 """)
         sql_correction_prompt = sql_correction_prompt.format(
                     user_request=state["input"],
@@ -59,16 +57,20 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
                     generated_sql=state["query"],
                     database_error=state["database_error"]
                 )
+
+        print("sql_correction_prompt:",sql_correction_prompt)
         model=model_creation().with_structured_output(Query_evaluation)
         data=model.invoke(sql_correction_prompt)
         query=data.query
+        print("remediated query:",query)
         return Command(
                             update={"query":query,
                             "retry_count":state["retry_count"]+1},
                             goto="query_execution"
                         )
-    except:
+    except Exception as e:
+        print("error at remediate_sql",e)
         return Command(
-                        update={"Error":"error at remediate_sql"},
+                        update={"Error":str(e)},
                         goto="error_router"
                     )

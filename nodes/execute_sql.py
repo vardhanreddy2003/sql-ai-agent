@@ -8,7 +8,7 @@ from db.DBConnection import getConnection
 from langgraph.graph import END
 import mysql.connector
 
-def execute_sql_query(state:SQLAgentState)-> Command[Literal[END,"error_router","remediate_sql"]]:
+def execute_sql_query(state:SQLAgentState)-> Command[Literal["error_router","remediate_sql","summary"]]:
 
     
 
@@ -24,7 +24,7 @@ def execute_sql_query(state:SQLAgentState)-> Command[Literal[END,"error_router",
         state["query_result"]=rows
         return Command(
             update={"query_result":rows},
-            goto=END
+            goto="summary"
         )
     except mysql.connector.Error as e:
         print("database error:",e)
@@ -32,8 +32,9 @@ def execute_sql_query(state:SQLAgentState)-> Command[Literal[END,"error_router",
             update={"database_error":str(e)},
             goto="remediate_sql"
         )
-    except:
-         return Command(
-                            update={"Error":"error at execute sql"},
-                            goto="error_router"
+    except Exception as e:
+        print("error at execute_sql",e)
+        return Command(
+            update={"Error":str(e)},
+            goto="error_router"
                         )

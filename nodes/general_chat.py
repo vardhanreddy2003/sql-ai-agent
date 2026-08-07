@@ -18,8 +18,9 @@ def general_chat(State:SQLAgentState)->Command[Literal["error_router",END]]:
             update={"result":data.content},
             goto=END
         )
-    except:
+    except Exception as e:
+        print("error at general_chat",e)
         return Command(
-                   update={"Error":"error at build_query"},
+                update={"Error":str(e)},
                    goto="error_router"
                ) 

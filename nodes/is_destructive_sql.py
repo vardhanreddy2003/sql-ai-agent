@@ -6,7 +6,7 @@ from models.Safeguard import Safeguard
 from models.llm import model_creation
 from langgraph.types import Command
 
-def is_destructive_sql(state:SQLAgentState)->Command[Literal["build_query","harmful_input","error_router"]]:
+def is_destructive_sql(state:SQLAgentState)->Command[Literal["search_query_memory","harmful_input","error_router"]]:
     try:
         input=state["input"]
         prompt=PromptTemplate(
@@ -59,7 +59,7 @@ def is_destructive_sql(state:SQLAgentState)->Command[Literal["build_query","harm
                    update={
                           "input_safety_status":"safe"
                    },
-                   goto="build_query"
+                   goto="search_query_memory"
             )
         else:
             return Command(
@@ -69,6 +69,7 @@ def is_destructive_sql(state:SQLAgentState)->Command[Literal["build_query","harm
                     goto="harmful_input"
                 )
     except Exception as e:
+                    print("error at is_destructive_sql",e)
                     return Command(
                         update={
                             "Error": str(e)

@@ -9,11 +9,12 @@ def irrelevant_input(state:SQLAgentState)->Command[Literal[END,"error_router"]]:
     
         return Command(
                update={
-                      "result":"can you please tell any sql requirement.I can help you with that"
+                      "result":"your request is irrelevant to the database. Please try a different command."
                },
                goto=END
         )
     except Exception as e:
+                print("error at irrelevant_input",e)
                 return Command(
                     update={
                         "Error": str(e)
