@@ -5,7 +5,7 @@ from langchain_core.prompts import PromptTemplate
 from graph.State import SQLAgentState
 from models.llm import model_creation
 from models.Intent_classification import IntentClassification
-def intent_classification(state:SQLAgentState)->Command[Literal["search_query_memory","general_chat","error_router"]]:
+def intent_classification(state:SQLAgentState)->Command[Literal["is_destructive_sql","general_chat","error_router"]]:
 
     try:
         prompt=PromptTemplate(
@@ -57,7 +57,7 @@ def intent_classification(state:SQLAgentState)->Command[Literal["search_query_me
                       "intent":intent,
                       "retry_count":0
                  },
-                 goto="search_query_memory"
+                 goto="is_destructive_sql"
             )
         
         else:
@@ -72,9 +72,8 @@ def intent_classification(state:SQLAgentState)->Command[Literal["search_query_me
     
 
     except Exception as e:
+            print("error at intent_classification",e)
             return Command(
-                update={
-                    "Error": str(e)
-                },
+                update={"Error":str(e)},
                 goto="error_router"
             )

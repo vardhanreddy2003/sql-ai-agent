@@ -14,3 +14,4 @@ class SQLAgentState(TypedDict):
     Error:str
     database_error:str
     retry_count:int
+    workflow_error:str

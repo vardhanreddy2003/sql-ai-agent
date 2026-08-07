@@ -21,6 +21,7 @@ def retrieve_schema(state:SQLAgentState)->Command[Literal["error_router","check_
                                     goto="check_query"
                                 )
     except Exception as e:
+                        print("error at retrieve_schema",e)
                         return Command(
                             update={
                                 "Error": str(e)

@@ -34,7 +34,8 @@ def answer():
             "query_result":res.get("query_result",None),
             "result":res.get("result",None),
             "Error":res.get("Error",None),
-            
+            "workflow_error":res.get("workflow_error",None),
+            "database_error":res.get("database_error",None)
         }
     )
 

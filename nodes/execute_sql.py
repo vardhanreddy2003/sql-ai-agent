@@ -32,8 +32,9 @@ def execute_sql_query(state:SQLAgentState)-> Command[Literal["error_router","rem
             update={"database_error":str(e)},
             goto="remediate_sql"
         )
-    except:
-         return Command(
-                            update={"Error":"error at execute sql"},
-                            goto="error_router"
+    except Exception as e:
+        print("error at execute_sql",e)
+        return Command(
+            update={"Error":str(e)},
+            goto="error_router"
                         )

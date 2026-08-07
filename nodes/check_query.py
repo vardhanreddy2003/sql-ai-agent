@@ -9,7 +9,7 @@ from models.Evaluation import evaluation
 from models.llm import model_creation
 
 
-def check_query(state:SQLAgentState)-> Command[Literal["is_destructive_sql","error_router","irrelevant_input","build_query"]]:
+def check_query(state:SQLAgentState)-> Command[Literal["error_router","irrelevant_input","build_query"]]:
         
     try:
         prompt= PromptTemplate(
@@ -43,27 +43,18 @@ def check_query(state:SQLAgentState)-> Command[Literal["is_destructive_sql","err
 
         state["opinion"]=data.opinion
         if(data.opinion.startswith("yes")):
-                if(state["user_type"]=="user"):
-                
-                    return Command(
-                                        update={"opinion":"yes"},
-                                        goto="is_destructive_sql"
-                                    )
-                else:
-                    return Command(
-                                    update={"opinion":"yes"},
-                                    goto="build_query"
-                                 )
-                    
-        
-        else:
                 return Command(
-                                update={"opinion":"yes"},
-                                goto="irrelevant_input"
-                        )
-                
-    except:
+                      update={"opinion":"yes"},
+                      goto="build_query"
+                )
+        else:
+            return Command(
+                 update={"opinion":"no"},
+                 goto="irrelevant_input"
+            )                
+    except Exception as e:
+        print("error at check_query",e)
         return Command(
-                    update={"Error":"error at build_query"},
+                update={"Error":str(e)},
                     goto="error_router"
                 )
