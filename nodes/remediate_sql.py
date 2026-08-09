@@ -40,6 +40,13 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
                 Database Schema
                 =========================
                 {schema}
+
+                =========================
+                chat history
+                =========================
+                {chat_history}
+                
+                
         
                 =========================
                 Generated SQL
@@ -55,7 +62,8 @@ def remediate_sql(state:SQLAgentState)-> Command[Literal["query_execution","erro
                     user_request=state["input"],
                     schema=state["schema"],
                     generated_sql=state["query"],
-                    database_error=state["database_error"]
+                    database_error=state["database_error"],
+                    chat_history=state["chat_history"]
                 )
 
         print("sql_correction_prompt:",sql_correction_prompt)
