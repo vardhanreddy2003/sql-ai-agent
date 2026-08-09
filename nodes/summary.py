@@ -1,4 +1,6 @@
 
+from langchain.messages import AIMessage
+
 from graph.State import SQLAgentState
 from models.llm import model_creation
 from langchain_core.prompts import PromptTemplate
@@ -70,7 +72,8 @@ def summary(state:SQLAgentState)-> Command[Literal["error_router",END]]:
         res=summaryModel.invoke(prompt)
         
         return Command(
-            update={"summary":res.content},
+            update={"summary":res.content,
+                    "messages":AIMessage(content=state["query"])},
             goto=END
         )
     except:

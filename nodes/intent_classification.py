@@ -8,6 +8,15 @@ from models.Intent_classification import IntentClassification
 def intent_classification(state:SQLAgentState)->Command[Literal["is_destructive_sql","general_chat","error_router"]]:
 
     try:
+        chat_history=""
+        for message in state["messages"]:
+            if message.type == "human":
+                chat_history += f"User: {message.content}\n"
+        
+            elif message.type == "ai":
+                chat_history += f"Assistant: {message.content}\n"
+        print("chat history")
+        print(chat_history)
         prompt=PromptTemplate(
                 template = """
             
@@ -38,12 +47,15 @@ def intent_classification(state:SQLAgentState)->Command[Literal["is_destructive_
 
             User Request:
             {user_input}
+
+            Chat History:
+            {chat_history}
             """,
-                input_variables=["user_input"],
+                input_variables=["user_input","chat_history"],
                 
                 validate_template=True
             )
-        intent_prompt=prompt.invoke({"user_input":state.get("input")})
+        intent_prompt=prompt.invoke({"user_input":state.get("input"),"chat_history":chat_history})
         model=model_creation().with_structured_output(IntentClassification)
         data=model.invoke(intent_prompt)
         
@@ -55,7 +67,8 @@ def intent_classification(state:SQLAgentState)->Command[Literal["is_destructive_
             return Command(
                  update={
                       "intent":intent,
-                      "retry_count":0
+                      "retry_count":0,
+                      "chat_history":chat_history
                  },
                  goto="is_destructive_sql"
             )
@@ -64,7 +77,8 @@ def intent_classification(state:SQLAgentState)->Command[Literal["is_destructive_
              return Command(
                              update={
                                   "intent":intent,
-                                  "retry_count":0
+                                  "retry_count":0,
+                                  "chat_history":chat_history
                              },
                              goto="general_chat"
                         )    

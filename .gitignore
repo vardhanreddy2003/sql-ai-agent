@@ -1,6 +1,13 @@
-# .gitignore
+# Environment files
 .env
 .env.local
 .env.*
+
+# Vector databases
 query_db/
 schema_db/
+
+# LangGraph checkpoints
+checkpoints.db
+checkpoints.db-shm
+checkpoints.db-wal
