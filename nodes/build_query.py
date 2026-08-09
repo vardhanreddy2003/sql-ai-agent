@@ -12,6 +12,7 @@ def build_query(state:SQLAgentState)-> Command[Literal["query_execution","error_
 
     
     try:
+        
         prompt1 = PromptTemplate(
             template="""
         You are an expert SQL database analyst.
@@ -22,6 +23,8 @@ def build_query(state:SQLAgentState)-> Command[Literal["query_execution","error_
 
         User request:
         {user_input}
+        previous_chat:
+        {chat_history}
 
         Instructions:
         1. Generate a valid SQL query that answers the user's request.
@@ -32,11 +35,11 @@ def build_query(state:SQLAgentState)-> Command[Literal["query_execution","error_
         6. If the request cannot be answered from the schema, return an empty query and explain the reason in the schema-defined output format.
 
         """,
-            input_variables=["schema", "user_input"],
+            input_variables=["schema", "user_input","chat_history"],
             validate_template=True
         
         )
-        prompt=prompt1.invoke({"schema":state["schema"],"user_input":state["input"]})
+        prompt=prompt1.invoke({"schema":state["schema"],"user_input":state["input"],"chat_history":state["chat_history"]})
         model=model_creation().with_structured_output(Query_evaluation)
         data=model.invoke(prompt)
         query=data.query

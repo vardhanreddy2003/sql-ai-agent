@@ -2,10 +2,12 @@ from flask import Flask,request,jsonify
 from flask_scss import Scss
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+from langchain_core.messages import HumanMessage
 from graph.Chatbot_graph import validation_graph
 from db.DBConnection import getConnection
 from rag.vectorstore import get_retriever
 from nodes.retrieve_schema import retrieve_schema
+
 from dotenv import load_dotenv
 load_dotenv()
 app=Flask(__name__)
@@ -22,8 +24,11 @@ def answer():
     print("request received")
     data=request.get_json()
     question=data.get("question")
+    thread_id=data.get("thread_id")
+    print("thread_id", thread_id)
+   
     workflow=validation_graph()
-    res=workflow.invoke({"input":question,"user_type":"user"})
+    res=workflow.invoke({"input":question,"user_type":"user","messages":[HumanMessage(content=question)]},config={"configurable": {"thread_id": thread_id}})
     
    
 

@@ -1,3 +1,5 @@
+import sqlite3
+
 from click import prompt
 from flask import json
 from langgraph.graph import StateGraph,START,END
@@ -6,6 +8,7 @@ from typing import Literal
 from graph.State import SQLAgentState
 
 
+from langgraph.checkpoint.sqlite import SqliteSaver
 
 from nodes.error_router import error_router
 from nodes.intent_classification import intent_classification
@@ -21,6 +24,12 @@ from nodes.general_chat import general_chat
 from nodes.retrieve_schema import retrieve_schema
 from nodes.send_mail import send_alert_email
 from nodes.search_query_memory import search_query_memory
+
+
+
+conn=sqlite3.connect(database="checkpoints.db",check_same_thread=False)
+
+checkpointer=SqliteSaver(conn=conn)
 
 def validation_graph():
     graph=StateGraph(SQLAgentState)
@@ -42,5 +51,5 @@ def validation_graph():
 
     graph.add_edge(START, "intent_classification")
 
-    workflow = graph.compile()
+    workflow = graph.compile(checkpointer=checkpointer)
     return workflow
