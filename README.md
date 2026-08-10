@@ -235,3 +235,9 @@ Reuse SQL    Schema Retriever
 ## 👨‍💻 Author
 
 **Vardhan Reddy**
+
+## 📝 Medium Article
+
+I’m writing a detailed Medium article covering the architecture, design decisions, Query Vector Store, schema retrieval, SQL guardrails, remediation, threading, and the challenges faced while building this project.
+
+**Coming soon.**

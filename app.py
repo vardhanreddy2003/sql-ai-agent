@@ -26,10 +26,15 @@ def answer():
     question=data.get("question")
     thread_id=data.get("thread_id")
     print("thread_id", thread_id)
-   
+    config = {
+    "configurable": {
+        "thread_id": thread_id
+    }
+    }
+
     workflow=validation_graph()
-    chat_history=workflow.get_state(thread_id).values.get("messages",[])
-    res=workflow.invoke({"input":question,"user_type":"user","messages":[HumanMessage(content=question)],"chat_history":chat_history},config={"configurable": {"thread_id": thread_id}})
+    chat_history=workflow.get_state(config).values.get("messages",[])
+    res=workflow.invoke({"input":question,"user_type":"user","messages":[HumanMessage(content=question)],"chat_history":chat_history},config=config)
     
    
 
